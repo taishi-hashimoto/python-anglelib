@@ -7,6 +7,12 @@ class Angle:
 
     Degrees = "Degrees"
     Radians = "Radians"
+    CCW = "CCW"
+    CW = "CW"
+    N = "N"
+    E = "E"
+    W = "W"
+    S = "S"
 
     _zero_str2num = {
         True: {"N": 90., "E": 0., "S": -90., "W": 180.},
@@ -57,9 +63,9 @@ class Angle:
         if direction is not None:
             self._direction = direction
         else:
-            self._direction = "CCW"  # By default CCW
+            self._direction = self.CCW  # By default CCW
         if zero is None:
-            zero = "E"  # By default East
+            zero = self.E  # By default East
         self._zero = zero
 
     def _fix(self, value: np.ndarray, is_scalar=None):
@@ -100,7 +106,8 @@ class Angle:
 
     @property
     def direction_str(self) -> str:
-        return "CCW" if self.ccw else "CW"
+        idir = self._str2val_direction(self._direction)
+        return f"{idir:+1d} ({self.CCW if self.ccw else self.CW})"
 
     @property
     def unit_str(self) -> str:
@@ -128,7 +135,8 @@ class Angle:
         else:
             direction = self._direction
             d = self.direction
-
+        if zero is None:
+            zero = self._zero
         o = self._str2val_origin(zero, degrees)
         return Angle(
             d * (v - o),
@@ -153,7 +161,7 @@ class Angle:
         return self._value
 
     def __str__(self) -> str:
-        return f"{self._fix(self._value)}{self.unit_str} (0{self.unit_str} := {self._zero}{self.unit_str if not isinstance(self._zero, str) else ''}, {self.direction_str})"
+        return f"{self._fix(self._value)}{self.unit_str}[0{self.unit_str} := {self._zero}{self.unit_str if not isinstance(self._zero, str) else ''}, {self.direction_str}]"
     
     def __repr__(self) -> str:
         return self.__str__()
