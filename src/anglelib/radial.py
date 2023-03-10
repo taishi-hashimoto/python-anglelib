@@ -1,6 +1,5 @@
 "Radial angle <-> unit vector conversion."
 import numpy as np
-from copy import deepcopy
 from .angle import Angle
 
 
@@ -9,7 +8,7 @@ class Radial:
 
     def __init__(
         self,
-        *,
+        *args,
         ze: float = None,
         az: float = None,
         el: float = None,
@@ -18,6 +17,10 @@ class Radial:
         degrees: bool = None,
         radians: bool = None,
     ):
+        if args:
+            self._horz, self._vert = args
+            return
+
         if radians is not None and degrees is None:
             degrees = not radians
         elif degrees is not None:
@@ -43,8 +46,11 @@ class Radial:
                 ccw = True
                 zero = "E"
         else:
-            raise ValueError("ze or el must be set.")
-        self._horz = Angle(az, zero=zero, direction="CCW" if ccw else "CW", unit=unit)
+            self._vert = None
+        if az is not None:
+            self._horz = Angle(az, zero=zero, direction="CCW" if ccw else "CW", unit=unit)
+        else:
+            self._horz = None
 
     @property
     def _ze(self) -> Angle:
@@ -77,16 +83,24 @@ class Radial:
         return not self.degrees
 
     def to_degrees(self) -> 'Radial':
-        raise NotImplementedError
+        return Radial(
+            self._horz.convert(unit=Angle.Degrees),
+            self._vert.convert(unit=Angle.Degrees))
 
     def to_radians(self) -> 'Radial':
-        raise NotImplementedError
+        return Radial(
+            self._horz.convert(unit=Angle.Radians),
+            self._vert.convert(unit=Angle.Radians))
 
     def to_ccw(self) -> 'Radial':
-        raise NotImplementedError
+        return Radial(
+            self._horz.convert(zero=Angle.E, direction=Angle.CCW),
+            self._vert)
 
     def to_cw(self) -> 'Radial':
-        raise NotImplementedError
+        return Radial(
+            self._horz.convert(zero=Angle.N, direction=Angle.CW),
+            self._vert)
 
     @property
     def vector(self):
