@@ -6,7 +6,6 @@ Vectors are rowwise.
 import math
 import numpy as np
 from collections.abc import Iterable
-from .vecmath import normalized
 
 
 def length(v, axis=-1, keepdims=False):
