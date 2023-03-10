@@ -107,7 +107,7 @@ class Radial:
         """Radial unit vector (= direction cosines).
         """
         ze = self.ze_rad
-        az = self.az.convert(zero=Angle.E, direction=Angle.CCW, unit=Angle.Radians).eval()
+        az = self.az.convert(zero=Angle.E, direction=Angle.CCW, unit=Angle.Radians).to_math()
         ze = np.reshape(ze, (-1, 1))
         az = np.reshape(az, (-1, 1))
         return np.column_stack((
@@ -125,11 +125,11 @@ class Radial:
 
     @property
     def ze_rad(self) -> float:
-        return self.ze.convert(unit=Angle.Radians).eval()
+        return self.ze.convert(unit=Angle.Radians).value
 
     @property
     def ze_deg(self) -> float:
-        return self.ze.convert(unit=Angle.Degrees).eval()
+        return self.ze.convert(unit=Angle.Degrees).value
 
     @property
     def el(self) -> Angle:
@@ -137,11 +137,11 @@ class Radial:
 
     @property
     def el_rad(self) -> float:
-        return self.el.convert(unit=Angle.Radians).eval()
+        return self.el.convert(unit=Angle.Radians).value
 
     @property
     def el_deg(self) -> float:
-        return self.el.convert(unit=Angle.Degrees).eval()
+        return self.el.convert(unit=Angle.Degrees).value
 
     @property
     def az(self) -> Angle:
@@ -149,11 +149,11 @@ class Radial:
 
     @property
     def az_rad(self) -> float:
-        return self.az.convert(unit=Angle.Radians).eval()
+        return self.az.convert(unit=Angle.Radians).value
 
     @property
     def az_deg(self) -> float:
-        return self.az.convert(unit=Angle.Degrees).eval()
+        return self.az.convert(unit=Angle.Degrees).value
 
     def __iter__(self):
         if self.has_ze:

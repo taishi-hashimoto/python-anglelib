@@ -76,8 +76,11 @@ class Angle:
         else:
             return value
 
-    def eval(self) -> Union[float, np.ndarray]:
-        "Evaluate `zero` and `direction`. Unit is as is."
+    def to_math(self) -> Union[float, np.ndarray]:
+        """Evaluate `zero` and `direction` so that the resultant angle follows
+        the conventions in mathematics (measured CCW from East.)
+        Unit is not changed.
+        """
         return self._fix(self._value * self.direction + self.zero)
 
     @property
@@ -119,7 +122,7 @@ class Angle:
         direction: Union[int, str] = None,
         unit: str = None,
     ) -> 'Angle':
-        v = self.eval()
+        v = self.to_math()
 
         if unit is not None:
             degrees = self._str2val_unit(unit)
