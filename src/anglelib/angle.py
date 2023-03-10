@@ -76,12 +76,23 @@ class Angle:
         else:
             return value
 
-    def to_math(self) -> Union[float, np.ndarray]:
+    def to_math(self, degrees=False) -> Union[float, np.ndarray]:
         """Evaluate `zero` and `direction` so that the resultant angle follows
         the conventions in mathematics (measured CCW from East.)
-        Unit is not changed.
+        Unit is changed to radians by default.
+
+        Parameters
+        ==========
+        degrees: bool
+            Set `True` to convert the result into degrees.
+            Default is `False`, which converts the result into radians.
         """
-        return self._fix(self._value * self.direction + self.zero)
+        x = self._fix(self._value * self.direction + self.zero)
+        if self.degrees and not degrees:
+            x = np.deg2rad(x)
+        elif not self.degrees and degrees:
+            x = np.rad2deg(x)
+        return x
 
     @property
     def value(self) -> Union[float, np.ndarray]:
@@ -122,7 +133,7 @@ class Angle:
         direction: Union[int, str] = None,
         unit: str = None,
     ) -> 'Angle':
-        v = self.to_math()
+        v = self.to_math(self.degrees)
 
         if unit is not None:
             degrees = self._str2val_unit(unit)
