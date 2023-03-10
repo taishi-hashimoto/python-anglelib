@@ -8,6 +8,17 @@ import numpy as np
 from collections.abc import Iterable
 
 
+def radial(ze, az):
+    """Compute radial unit vector to the specified direction.
+    """
+    ze = np.reshape(ze, (-1, 1))
+    az = np.reshape(az, (-1, 1))
+    return np.column_stack((
+        np.sin(ze) * np.cos(az),
+        np.sin(ze) * np.sin(az),
+        np.cos(ze)))
+
+
 def length(v, axis=-1, keepdims=False):
     return np.linalg.norm(v, axis=axis, keepdims=keepdims)
 

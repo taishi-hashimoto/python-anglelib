@@ -1,6 +1,7 @@
 "Radial angle <-> unit vector conversion."
 import numpy as np
 from .angle import Angle
+from .vecmath import radial as _radial
 
 
 class Radial:
@@ -106,14 +107,7 @@ class Radial:
     def vector(self):
         """Radial unit vector (= direction cosines).
         """
-        ze = self.ze_rad
-        az = self.az.convert(zero=Angle.E, direction=Angle.CCW, unit=Angle.Radians).to_math()
-        ze = np.reshape(ze, (-1, 1))
-        az = np.reshape(az, (-1, 1))
-        return np.column_stack((
-            np.sin(ze) * np.cos(az),
-            np.sin(ze) * np.sin(az),
-            np.cos(ze)))
+        return _radial(self.ze.to_math(), self.az.to_math())
 
     @property
     def direction_cosines(self):
