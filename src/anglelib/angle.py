@@ -157,7 +157,10 @@ class Angle:
         value = wrap(self._fix(self._value), lo, hi)
         return Angle(value, zero=self._zero, direction=self._direction, unit=self._unit)
 
-    def __array__(self):
+    def __float__(self) -> float:
+        return float(self._value.item())
+
+    def __array__(self) -> np.ndarray:
         return self._value
 
     def __str__(self) -> str:
