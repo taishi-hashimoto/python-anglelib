@@ -20,6 +20,8 @@ class Radial:
     ):
         if args:
             self._horz, self._vert = args
+            assert isinstance(self._horz, Angle)
+            assert isinstance(self._vert, Angle)
             return
 
         if radians is not None and degrees is None:
