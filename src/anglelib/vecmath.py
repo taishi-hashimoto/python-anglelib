@@ -23,7 +23,7 @@ def radial(ze, az):
 def radial_range(
     ze0: float, az0: float,
     ze1: float, az1: float,
-    angular_step: float,
+    step: float,
     axis: Tuple[float, float, float] = None,
     include_end: bool = False
 ) -> List[Tuple[float, float, float]]:
@@ -35,7 +35,7 @@ def radial_range(
         Initial point.
     ze1, az1: float
         Terminal point.
-    angular_step: float
+    step: float
         Angular step in radians. If `include_end` is `True`, this is used as
         initial value and actual angular spacing is modified so that both ends
         are included.
@@ -54,13 +54,41 @@ def radial_range(
     a = angle_between(u, v, ref=axis)
     if axis is None:
         axis = np.cross(u, v)
-    n = math.ceil(a / angular_step)
+    n = math.ceil(a / step)
     if include_end:
-        angular_step = a / n
-    data = [rotate(u, axis, angular_step*i) for i in range(n)]
+        step = a / n
+    data = [rotate(u, axis, step*i) for i in range(n)]
     if include_end:
         data.append(v)
     return np.row_stack(data)
+
+
+def radial_line_around(
+    ze: float, az: float,
+    offset: float,
+    step: float,
+    angle: float = 0.,
+) -> List[Tuple[float, float, float]]:
+    """Compute radial unit vectors around the specified angle.
+    
+    Parameters
+    ==========
+    ze, az: float
+        Center of the line.
+    offset: float
+        Half width of the line in radians.
+    step: float
+        Angular step in the line.
+    angle: float
+        Tilting of the line measured CCW from the radial vector to zenith.
+        Default is zero.
+    """
+    axis = radial(ze, az)
+    stop = rotate(radial(ze + offset, az), axis, angle)
+    start = rotate(radial(ze - offset, az), axis, angle)
+    ze0, az0 = direction(start).T
+    ze1, az1 = direction(stop).T
+    return radial_range(ze0, az0, ze1, az1, step, include_end=True)
 
 
 def length(v, axis=-1, keepdims=False):

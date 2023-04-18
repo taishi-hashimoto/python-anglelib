@@ -3,7 +3,10 @@ import numpy as np
 from typing import Tuple
 from .angle import Angle
 from .vecmath import (
-    radial as _radial, radial_range as _range, direction as _direction
+    radial as _radial,
+    radial_range as _range,
+    direction as _direction,
+    radial_line_around as _line_around
 )
 
 
@@ -193,7 +196,7 @@ class Radial:
         step: Angle,
         axis: Tuple[float, float, float] = None,
         include_end: bool = False
-    ):
+    ) -> 'Radial':
         ze0 = start.ze_rad
         az0 = start.az_rad
         ze1 = stop.ze_rad
@@ -201,9 +204,23 @@ class Radial:
         v = _range(
             ze0, az0,
             ze1, az1,
-            angular_step=step.to_math(),
+            step=step.to_math(),
             axis=axis,
             include_end=include_end
         )
+        ze, az = _direction(v).T
+        return Radial(ze=ze, az=az, radians=True)
+
+    @staticmethod
+    def line_around(
+        center: 'Radial',
+        offset: Angle,
+        step: Angle,
+        angle: Angle,
+    ) -> 'Radial':
+        ze0 = center.ze_rad
+        az0 = center.az_rad
+        v = _line_around(
+            ze0, az0, offset.to_math(), step.to_math(), angle.to_math())
         ze, az = _direction(v).T
         return Radial(ze=ze, az=az, radians=True)
