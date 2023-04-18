@@ -5,6 +5,7 @@ Vectors are rowwise.
 """
 import math
 import numpy as np
+from typing import List, Tuple
 from collections.abc import Iterable
 
 
@@ -17,6 +18,49 @@ def radial(ze, az):
         np.sin(ze) * np.cos(az),
         np.sin(ze) * np.sin(az),
         np.cos(ze)))
+
+
+def radial_range(
+    ze0: float, az0: float,
+    ze1: float, az1: float,
+    angular_step: float,
+    axis: Tuple[float, float, float] = None,
+    include_end: bool = False
+) -> List[Tuple[float, float, float]]:
+    """Compute radial unit vectors on the path from (ze0, az0) to (ze1, az1).
+
+    Parameters
+    ==========
+    ze0, az0: float
+        Initial point.
+    ze1, az1: float
+        Terminal point.
+    angular_step: float
+        Angular step in radians. If `include_end` is `True`, this is used as
+        initial value and actual angular spacing is modified so that both ends
+        are included.
+    axis: (float, float, float)
+        If given, this is used to determine how the angle is measured.
+    include_end: bool
+        If set to `True`, angular_step is modified to include the end.
+
+    Returns
+    =======
+    v: List[Tuple[float, float, float]]
+        Radial vectors.
+    """
+    u = radial(ze0, az0)
+    v = radial(ze1, az1)
+    a = angle_between(u, v, ref=axis)
+    if axis is None:
+        axis = np.cross(u, v)
+    n = math.ceil(a / angular_step)
+    if include_end:
+        angular_step = a / n
+    data = [rotate(u, axis, angular_step*i) for i in range(n)]
+    if include_end:
+        data.append(v)
+    return np.row_stack(data)
 
 
 def length(v, axis=-1, keepdims=False):

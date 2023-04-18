@@ -1,7 +1,10 @@
 "Radial angle <-> unit vector conversion."
 import numpy as np
+from typing import Tuple
 from .angle import Angle
-from .vecmath import radial as _radial
+from .vecmath import (
+    radial as _radial, radial_range as _range, direction as _direction
+)
 
 
 class Radial:
@@ -182,3 +185,25 @@ class Radial:
 
     def __repr__(self) -> str:
         return self.__str__()
+
+    @staticmethod
+    def range(
+        start: 'Radial',
+        stop: 'Radial',
+        step: Angle,
+        axis: Tuple[float, float, float] = None,
+        include_end: bool = False
+    ):
+        ze0 = start.ze_rad
+        az0 = start.az_rad
+        ze1 = stop.ze_rad
+        az1 = stop.az_rad
+        v = _range(
+            ze0, az0,
+            ze1, az1,
+            angular_step=step.to_math(),
+            axis=axis,
+            include_end=include_end
+        )
+        ze, az = _direction(v).T
+        return Radial(ze=ze, az=az, radians=True)
