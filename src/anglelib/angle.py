@@ -212,3 +212,6 @@ class Angle:
 
     def __len__(self) -> int:
         return len(self._value)
+
+    def __iter__(self):
+        return self.to_math().__iter__()
