@@ -190,3 +190,22 @@ class Angle:
     
     def __repr__(self) -> str:
         return self.__str__()
+
+    def __add__(self, other):
+        if isinstance(other, Angle):
+            converted = other.convert(self._zero, self._direction, self._unit)
+            return Angle(self._value + converted._value, zero=self._zero, direction=self._direction, unit=self._unit)
+        else:
+            return self.to_math() + other
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __neg__(self):
+        return Angle(-self._value, zero=self._zero, direction=self._direction, unit=self._unit)
+
+    def __sub__(self, other):
+        return self.__add__(-other)
+
+    def __rsub__(self, other):
+        return self.__neg__().__add__(other)
