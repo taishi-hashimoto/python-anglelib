@@ -47,6 +47,14 @@ class Angle:
             else:
                 raise ValueError(f"Unknown unit: {unit}")
 
+    @staticmethod
+    def from_degrees(value) -> 'Angle':
+        return Angle(value, unit=Angle.Degrees)
+
+    @staticmethod
+    def from_radians(value) -> 'Angle':
+        return Angle(value, unit=Angle.Radians)
+
     def __init__(
         self,
         value: float, *,
