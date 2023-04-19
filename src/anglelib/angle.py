@@ -209,3 +209,6 @@ class Angle:
 
     def __rsub__(self, other):
         return self.__neg__().__add__(other)
+
+    def __len__(self) -> int:
+        return len(self._value)
