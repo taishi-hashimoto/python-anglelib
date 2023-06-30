@@ -1,0 +1,77 @@
+stages:
+  - debug
+  - release
+  - publish
+
+default:
+  tags:
+    - docker
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/ 
+      variables:
+        SRLC_STAGE: "release"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        SRLC_STAGE: "release-candidate"
+    - when: always 
+
+debug-env:
+  stage: debug
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - printenv
+
+.semantic_release:
+  stage: release
+  image: node:18
+  rules:
+    - if: $SRLC_STAGE && $SRLC_STAGE == "release-candidate"
+      when: manual
+      exists:
+        - .releaserc.yml
+  variables:
+    GIT_STRATEGY: clone
+    GITLAB_URL: $CI_SERVER_URL
+    GITLAB_TOKEN: $SEMANTIC_RELEASE_GITLAB_TOKEN
+    SEMANTIC_RELEASE_OPTS: --help
+  before_script:
+    - git fetch origin $CI_DEFAULT_BRANCH
+    - git checkout $CI_DEFAULT_BRANCH
+    - git fetch --tags
+    - npm install -g semantic-release @semantic-release/{changelog,gitlab,git,exec} conventional-changelog-conventionalcommits
+  script:
+    - semantic-release $SEMANTIC_RELEASE_OPTS
+    
+semantic_release:dry-run:
+  extends: .semantic_release
+  variables:
+    SEMANTIC_RELEASE_OPTS: -b $CI_DEFAULT_BRANCH --dry-run --debug
+
+semantic_release:
+  extends: .semantic_release
+  needs:
+    - semantic_release:dry-run
+  variables:
+    SEMANTIC_RELEASE_OPTS: -b $CI_DEFAULT_BRANCH
+
+publish_package:
+  stage: publish
+  image: python:3.10-slim-bullseye
+  rules:
+    - if: $SRLC_STAGE && $SRLC_STAGE == "release"
+  before_script:
+    - pip install build twine
+  variables:
+    GIT_STRATEGY: clone
+    TWINE_USERNAME: gitlab-ci-token
+    TWINE_PASSWORD: $CI_JOB_TOKEN
+  script:
+    - python -m build
+    - python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/* 

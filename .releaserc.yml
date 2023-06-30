@@ -1,0 +1,71 @@
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - preset: conventionalcommits
+      releaseRules:
+      - breaking: true
+        release: major
+      - type: feat 
+        release: minor
+      - type: fix
+        release: patch
+      - type: perf
+        release: patch
+      - type: docs
+        release: patch
+      - type: refactor 
+        release: patch
+      - type: style
+        release: patch
+      - type: build
+        release: patch
+      - type: ci
+        release: patch
+      - type: test
+        release: patch
+      - scope: no-release
+        release: false
+  - - "@semantic-release/release-notes-generator"
+    - preset: conventionalcommits
+      presetConfig:
+        types:
+        - type: feat
+          section: Features
+        - type: fix
+          section: Bug Fixes
+        - type: perf
+          section: Performance Improvements
+        - type: revert
+          section: Reverts
+        - type: docs
+          section: Documentation
+          hidden: true
+        - type: style
+          section: Styles
+          hidden: true
+        - type: chore
+          section: Miscellaneous Chores
+          hidden: true
+        - type: refactor
+          section: Code Refactoring
+          hidden: true
+        - type: test
+          section: Tests
+          hidden: true
+        - type: build
+          section: Build System
+          hidden: true
+        - type: ci
+          section: Continuous Integration
+          hidden: true
+        - type: improvement
+          section: Improvement
+          hidden: false
+  - "@semantic-release/changelog"
+  - "@semantic-release/gitlab"
+  - - "@semantic-release/exec"
+    - prepareCmd: sed -i -E "/^[ \t]*\[tool.poetry\]/,/\[/s/^([ \t]*version[ \t]*=[ \t]*(\x22|\x27))(.*)((\x22|\x27).*)$/\1${nextRelease.version}\5/" pyproject.toml
+  - - "@semantic-release/git"
+    - assets:
+      - CHANGELOG.md
+      - pyproject.toml
+      message: "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
