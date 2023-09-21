@@ -46,16 +46,11 @@ class Radial:
             ccw = None  # By default, direction of azimuth depends on which of ze/az is set.
         if ze is None and el is not None:
             self._vert = Angle(el, zero=90 if degrees else np.pi/2, direction=-1, unit=unit)
-            if ccw is None:
-                ccw = False
-            zero = "N"
         elif ze is not None and el is None:
             self._vert = Angle(ze, unit=unit)
-            if ccw is None:
-                ccw = True
-                zero = "E"
         else:
             self._vert = None
+        zero = "E" if ccw else "N"
         if az is not None:
             self._horz = Angle(az, zero=zero, direction="CCW" if ccw else "CW", unit=unit)
         else:
