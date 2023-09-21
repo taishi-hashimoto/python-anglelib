@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "anglelib"
-version = "0.1.12"
+version = "0.1.13"
 description = "Angles in various convensions and related vector math."
 authors = ["Taishi Hashimoto <taishi.hashimoto@eiscat.se>"]
 packages = [
