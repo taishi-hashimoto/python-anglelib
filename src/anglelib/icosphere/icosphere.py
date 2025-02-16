@@ -151,7 +151,7 @@ class Icosphere:
         r = Radial(ze=ze, az=az, radians=True)
         return r
 
-    def to_direction(self, *, el=True, ze=False, ccw=None, degrees=False, wrap=None, sortby=None):
+    def to_direction(self, *, ze=True, el=False, ccw=None, degrees=False, wrap=None, sortby=None):
         """
         Return directions of vertices.
         
